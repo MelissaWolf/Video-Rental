@@ -32,9 +32,9 @@
             this.CustomersBtn = new System.Windows.Forms.Button();
             this.RentsBtn = new System.Windows.Forms.Button();
             this.MoviesBtn = new System.Windows.Forms.Button();
-            this.LastNameTxtBox = new System.Windows.Forms.TextBox();
-            this.CustIDTxtBox = new System.Windows.Forms.TextBox();
             this.FirstNameTxtBox = new System.Windows.Forms.TextBox();
+            this.CustIDTxtBox = new System.Windows.Forms.TextBox();
+            this.LastNameTxtBox = new System.Windows.Forms.TextBox();
             this.IDLbl = new System.Windows.Forms.Label();
             this.FirstNameLbl = new System.Windows.Forms.Label();
             this.LastNameLbl = new System.Windows.Forms.Label();
@@ -67,6 +67,11 @@
             this.CreateBtn = new System.Windows.Forms.Button();
             this.UpdateBtn = new System.Windows.Forms.Button();
             this.DelBtn = new System.Windows.Forms.Button();
+            this.RentOutBtn = new System.Windows.Forms.Button();
+            this.RentInBtn = new System.Windows.Forms.Button();
+            this.ViewAllRadioBtn = new System.Windows.Forms.RadioButton();
+            this.ViewOutRadioBtn = new System.Windows.Forms.RadioButton();
+            this.ViewInRadioBtn = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.DbGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -83,40 +88,49 @@
             // 
             // CustomersBtn
             // 
-            this.CustomersBtn.Location = new System.Drawing.Point(12, 12);
+            this.CustomersBtn.BackColor = System.Drawing.Color.DarkGray;
+            this.CustomersBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomersBtn.ForeColor = System.Drawing.Color.Black;
+            this.CustomersBtn.Location = new System.Drawing.Point(12, 4);
             this.CustomersBtn.Name = "CustomersBtn";
-            this.CustomersBtn.Size = new System.Drawing.Size(155, 27);
+            this.CustomersBtn.Size = new System.Drawing.Size(155, 35);
             this.CustomersBtn.TabIndex = 6;
             this.CustomersBtn.Text = "Customers";
-            this.CustomersBtn.UseVisualStyleBackColor = true;
+            this.CustomersBtn.UseVisualStyleBackColor = false;
             this.CustomersBtn.Click += new System.EventHandler(this.CustomersBtn_Click);
             // 
             // RentsBtn
             // 
-            this.RentsBtn.Location = new System.Drawing.Point(173, 12);
+            this.RentsBtn.BackColor = System.Drawing.Color.DarkGray;
+            this.RentsBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold);
+            this.RentsBtn.ForeColor = System.Drawing.Color.Black;
+            this.RentsBtn.Location = new System.Drawing.Point(173, 4);
             this.RentsBtn.Name = "RentsBtn";
-            this.RentsBtn.Size = new System.Drawing.Size(155, 27);
+            this.RentsBtn.Size = new System.Drawing.Size(155, 35);
             this.RentsBtn.TabIndex = 7;
             this.RentsBtn.Text = "Rented Movies";
-            this.RentsBtn.UseVisualStyleBackColor = true;
+            this.RentsBtn.UseVisualStyleBackColor = false;
             this.RentsBtn.Click += new System.EventHandler(this.RentsBtn_Click);
             // 
             // MoviesBtn
             // 
-            this.MoviesBtn.Location = new System.Drawing.Point(334, 12);
+            this.MoviesBtn.BackColor = System.Drawing.Color.DarkGray;
+            this.MoviesBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold);
+            this.MoviesBtn.ForeColor = System.Drawing.Color.Black;
+            this.MoviesBtn.Location = new System.Drawing.Point(334, 4);
             this.MoviesBtn.Name = "MoviesBtn";
-            this.MoviesBtn.Size = new System.Drawing.Size(155, 27);
+            this.MoviesBtn.Size = new System.Drawing.Size(155, 35);
             this.MoviesBtn.TabIndex = 8;
             this.MoviesBtn.Text = "Movies";
-            this.MoviesBtn.UseVisualStyleBackColor = true;
+            this.MoviesBtn.UseVisualStyleBackColor = false;
             this.MoviesBtn.Click += new System.EventHandler(this.MoviesBtn_Click);
             // 
-            // LastNameTxtBox
+            // FirstNameTxtBox
             // 
-            this.LastNameTxtBox.Location = new System.Drawing.Point(364, 437);
-            this.LastNameTxtBox.Name = "LastNameTxtBox";
-            this.LastNameTxtBox.Size = new System.Drawing.Size(227, 22);
-            this.LastNameTxtBox.TabIndex = 12;
+            this.FirstNameTxtBox.Location = new System.Drawing.Point(131, 437);
+            this.FirstNameTxtBox.Name = "FirstNameTxtBox";
+            this.FirstNameTxtBox.Size = new System.Drawing.Size(227, 22);
+            this.FirstNameTxtBox.TabIndex = 12;
             // 
             // CustIDTxtBox
             // 
@@ -125,12 +139,12 @@
             this.CustIDTxtBox.Size = new System.Drawing.Size(113, 22);
             this.CustIDTxtBox.TabIndex = 13;
             // 
-            // FirstNameTxtBox
+            // LastNameTxtBox
             // 
-            this.FirstNameTxtBox.Location = new System.Drawing.Point(131, 437);
-            this.FirstNameTxtBox.Name = "FirstNameTxtBox";
-            this.FirstNameTxtBox.Size = new System.Drawing.Size(227, 22);
-            this.FirstNameTxtBox.TabIndex = 14;
+            this.LastNameTxtBox.Location = new System.Drawing.Point(364, 437);
+            this.LastNameTxtBox.Name = "LastNameTxtBox";
+            this.LastNameTxtBox.Size = new System.Drawing.Size(227, 22);
+            this.LastNameTxtBox.TabIndex = 14;
             // 
             // IDLbl
             // 
@@ -377,6 +391,8 @@
             this.CreateBtn.TabIndex = 52;
             this.CreateBtn.Text = "Create";
             this.CreateBtn.UseVisualStyleBackColor = true;
+            this.CreateBtn.Visible = false;
+            this.CreateBtn.Click += new System.EventHandler(this.CreateBtn_Click);
             // 
             // UpdateBtn
             // 
@@ -387,22 +403,95 @@
             this.UpdateBtn.TabIndex = 53;
             this.UpdateBtn.Text = "Update";
             this.UpdateBtn.UseVisualStyleBackColor = true;
+            this.UpdateBtn.Visible = false;
+            this.UpdateBtn.Click += new System.EventHandler(this.UpdateBtn_Click);
             // 
             // DelBtn
             // 
-            this.DelBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DelBtn.BackColor = System.Drawing.Color.Firebrick;
+            this.DelBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DelBtn.Location = new System.Drawing.Point(1202, 309);
             this.DelBtn.Name = "DelBtn";
             this.DelBtn.Size = new System.Drawing.Size(153, 97);
             this.DelBtn.TabIndex = 54;
             this.DelBtn.Text = "DELETE";
-            this.DelBtn.UseVisualStyleBackColor = true;
+            this.DelBtn.UseVisualStyleBackColor = false;
+            this.DelBtn.Visible = false;
+            this.DelBtn.Click += new System.EventHandler(this.DelBtn_Click);
+            // 
+            // RentOutBtn
+            // 
+            this.RentOutBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RentOutBtn.Location = new System.Drawing.Point(830, 482);
+            this.RentOutBtn.Name = "RentOutBtn";
+            this.RentOutBtn.Size = new System.Drawing.Size(153, 97);
+            this.RentOutBtn.TabIndex = 55;
+            this.RentOutBtn.Text = "Movie Out";
+            this.RentOutBtn.UseVisualStyleBackColor = true;
+            this.RentOutBtn.Visible = false;
+            this.RentOutBtn.Click += new System.EventHandler(this.RentOutBtn_Click);
+            // 
+            // RentInBtn
+            // 
+            this.RentInBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RentInBtn.Location = new System.Drawing.Point(1043, 482);
+            this.RentInBtn.Name = "RentInBtn";
+            this.RentInBtn.Size = new System.Drawing.Size(153, 97);
+            this.RentInBtn.TabIndex = 56;
+            this.RentInBtn.Text = "Movie In";
+            this.RentInBtn.UseVisualStyleBackColor = true;
+            this.RentInBtn.Visible = false;
+            this.RentInBtn.Click += new System.EventHandler(this.RentInBtn_Click);
+            // 
+            // ViewAllRadioBtn
+            // 
+            this.ViewAllRadioBtn.AutoSize = true;
+            this.ViewAllRadioBtn.Location = new System.Drawing.Point(653, 502);
+            this.ViewAllRadioBtn.Name = "ViewAllRadioBtn";
+            this.ViewAllRadioBtn.Size = new System.Drawing.Size(44, 21);
+            this.ViewAllRadioBtn.TabIndex = 57;
+            this.ViewAllRadioBtn.Text = "All";
+            this.ViewAllRadioBtn.UseVisualStyleBackColor = true;
+            this.ViewAllRadioBtn.Visible = false;
+            this.ViewAllRadioBtn.CheckedChanged += new System.EventHandler(this.ViewAllRadioBtn_CheckedChanged);
+            // 
+            // ViewOutRadioBtn
+            // 
+            this.ViewOutRadioBtn.AutoSize = true;
+            this.ViewOutRadioBtn.Location = new System.Drawing.Point(653, 529);
+            this.ViewOutRadioBtn.Name = "ViewOutRadioBtn";
+            this.ViewOutRadioBtn.Size = new System.Drawing.Size(100, 21);
+            this.ViewOutRadioBtn.TabIndex = 58;
+            this.ViewOutRadioBtn.TabStop = true;
+            this.ViewOutRadioBtn.Text = "Movies Out";
+            this.ViewOutRadioBtn.UseVisualStyleBackColor = true;
+            this.ViewOutRadioBtn.Visible = false;
+            this.ViewOutRadioBtn.CheckedChanged += new System.EventHandler(this.ViewOutRadioBtn_CheckedChanged);
+            // 
+            // ViewInRadioBtn
+            // 
+            this.ViewInRadioBtn.AutoSize = true;
+            this.ViewInRadioBtn.Location = new System.Drawing.Point(653, 556);
+            this.ViewInRadioBtn.Name = "ViewInRadioBtn";
+            this.ViewInRadioBtn.Size = new System.Drawing.Size(136, 21);
+            this.ViewInRadioBtn.TabIndex = 60;
+            this.ViewInRadioBtn.TabStop = true;
+            this.ViewInRadioBtn.Text = "Movies Returned";
+            this.ViewInRadioBtn.UseVisualStyleBackColor = true;
+            this.ViewInRadioBtn.Visible = false;
+            this.ViewInRadioBtn.CheckedChanged += new System.EventHandler(this.ViewInRadioBtn_CheckedChanged);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1367, 712);
+            this.Controls.Add(this.ViewInRadioBtn);
+            this.Controls.Add(this.ViewOutRadioBtn);
+            this.Controls.Add(this.ViewAllRadioBtn);
+            this.Controls.Add(this.RentInBtn);
+            this.Controls.Add(this.RentOutBtn);
             this.Controls.Add(this.DelBtn);
             this.Controls.Add(this.UpdateBtn);
             this.Controls.Add(this.CreateBtn);
@@ -435,9 +524,9 @@
             this.Controls.Add(this.LastNameLbl);
             this.Controls.Add(this.FirstNameLbl);
             this.Controls.Add(this.IDLbl);
-            this.Controls.Add(this.FirstNameTxtBox);
-            this.Controls.Add(this.CustIDTxtBox);
             this.Controls.Add(this.LastNameTxtBox);
+            this.Controls.Add(this.CustIDTxtBox);
+            this.Controls.Add(this.FirstNameTxtBox);
             this.Controls.Add(this.MoviesBtn);
             this.Controls.Add(this.RentsBtn);
             this.Controls.Add(this.CustomersBtn);
@@ -456,9 +545,9 @@
         private System.Windows.Forms.Button CustomersBtn;
         private System.Windows.Forms.Button RentsBtn;
         private System.Windows.Forms.Button MoviesBtn;
-        private System.Windows.Forms.TextBox LastNameTxtBox;
-        private System.Windows.Forms.TextBox CustIDTxtBox;
         private System.Windows.Forms.TextBox FirstNameTxtBox;
+        private System.Windows.Forms.TextBox CustIDTxtBox;
+        private System.Windows.Forms.TextBox LastNameTxtBox;
         private System.Windows.Forms.Label IDLbl;
         private System.Windows.Forms.Label FirstNameLbl;
         private System.Windows.Forms.Label LastNameLbl;
@@ -491,6 +580,11 @@
         private System.Windows.Forms.Button CreateBtn;
         private System.Windows.Forms.Button UpdateBtn;
         private System.Windows.Forms.Button DelBtn;
+        private System.Windows.Forms.Button RentOutBtn;
+        private System.Windows.Forms.Button RentInBtn;
+        private System.Windows.Forms.RadioButton ViewAllRadioBtn;
+        private System.Windows.Forms.RadioButton ViewOutRadioBtn;
+        private System.Windows.Forms.RadioButton ViewInRadioBtn;
     }
 }
 
