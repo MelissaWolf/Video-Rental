@@ -22,12 +22,15 @@ namespace Video_Rental
             con = new SqlConnection(conString);
         }
 
+        public string DBLinkCheck() //Connecting to DB
+        {
+            return con.Database;
+        }
+
         public string currTable;
 
         public DataTable CallCustomers()
         {
-            con.Open();
-
             DataTable customersDT = new DataTable();
 
             //Clears the datagrid
@@ -44,6 +47,8 @@ namespace Video_Rental
             string query = @"SELECT * FROM Customer ORDER BY LastName;";
 
             SqlCommand command = new SqlCommand(query, con);
+
+            con.Open();
 
             SqlDataReader reader = command.ExecuteReader();
 
@@ -66,8 +71,6 @@ namespace Video_Rental
 
         public DataTable CallRents(string view)
         {
-            con.Open();
-
             DataTable RentsDT = new DataTable();
 
             //Clears the datagrid
@@ -84,6 +87,8 @@ namespace Video_Rental
             string query = @"SELECT * FROM RentedMovies " + view + "ORDER BY DateRented;";
 
             SqlCommand command = new SqlCommand(query, con);
+
+            con.Open();
 
             SqlDataReader reader = command.ExecuteReader();
 
@@ -107,7 +112,7 @@ namespace Video_Rental
         public DataTable CallMovies()
         {
             //Updates Price everytime Table is called
-            string costUpdate = "UPDATE Movies SET Rental_Cost = 2 WHERE Year < " + (DateTime.Now.Year - 5) + ";";
+            string costUpdate = "UPDATE Movies SET Rental_Cost = 2 WHERE Year < " + (DateTime.Now.Year - 5) + " OR Year IS NULL;";
 
             using (SqlCommand update = new SqlCommand(costUpdate, con))
             {
@@ -118,9 +123,6 @@ namespace Video_Rental
 
                 con.Close();
             }
-            
-
-            con.Open();
 
             DataTable MoviestDT = new DataTable();
 
@@ -141,6 +143,8 @@ namespace Video_Rental
             string query = @"SELECT * FROM Movies ORDER BY Title;";
 
             SqlCommand command = new SqlCommand(query, con);
+
+            con.Open();
 
             SqlDataReader reader = command.ExecuteReader();
 
@@ -181,14 +185,14 @@ namespace Video_Rental
             cost = "";
             copies = "";
 
-            con.Open();
-
             //Retreiving data from DB
             string custQuery = @"SELECT FirstName, LastName, Phone, Address FROM Customer WHERE CustID = " + custId + ";";
             string movieQuery = @"SELECT Title, Year, Plot, Rating, Genre, Rental_Cost, Copies FROM Movies WHERE MovieID = " + movieId + ";";
 
             SqlCommand commandCust = new SqlCommand(custQuery, con);
             SqlCommand commandMovi = new SqlCommand(movieQuery, con);
+
+            con.Open();
 
             try
             {
@@ -280,7 +284,7 @@ namespace Video_Rental
             if (CustIDFK > 0 && MovieIDFK > 0) //Checks that both Foreign Keys Exist
             {
                 //Updates Price quickly
-                string costUpdate = "UPDATE Movies SET Rental_Cost = 2 WHERE MovieID = " + movieID + ", Year < " + (DateTime.Now.Year - 5) + ";";
+                string costUpdate = "UPDATE Movies SET Rental_Cost = 2 WHERE MovieID = " + movieID + " AND Year < " + (DateTime.Now.Year - 5) + ";";
 
                 using (SqlCommand update = new SqlCommand(costUpdate, con))
                 {
@@ -292,7 +296,7 @@ namespace Video_Rental
                     con.Close();
                 }
 
-                string getPrice = "SELECT Rental_Cost FROM Movies WHERE MovieID = " + movieID + ";";
+                string getPrice = "SELECT Rental_Cost FROM Movies WHERE MovieID = " + movieID + " OR Year IS NULL;";
 
                 string NewEntry = "INSERT INTO RentedMovies (CustIDFK, MovieIDFK, DateRented) " +
                         "VALUES(@CustIDFK, @MovieIDFK, @DateRented);";
@@ -450,7 +454,7 @@ namespace Video_Rental
             {
                 string dateCheckOut = "";
                 string dateCheckIn = "";
-                
+
                 //Checks for Date in Correct Format for DateRented
                 if (DateTime.TryParseExact(dateRent, "dd/MM/yyyy h:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime timeOut))
                 {
@@ -460,7 +464,7 @@ namespace Video_Rental
                 {
                     dateCheckOut = ", DateRented = @DateRented";
                 }
-                
+
                 //Checks for Date in Correct Format for Date Returned
                 if (DateTime.TryParseExact(dateReturned, "dd/MM/yyyy h:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime timeIn))
                 {
@@ -480,7 +484,7 @@ namespace Video_Rental
                 {
                     update.Parameters.Add("@CustIDFK", SqlDbType.NVarChar).Value = custID;
                     update.Parameters.Add("@MovieIDFK", SqlDbType.NVarChar).Value = movieID;
-                    
+
                     if (dateCheckOut != "" && dateRent != "") //Changing Date for Rented
                     {
                         update.Parameters.Add("@DateRented", SqlDbType.DateTime).Value = dateRent;
@@ -489,7 +493,7 @@ namespace Video_Rental
                     {
                         update.Parameters.AddWithValue("@DateRented", DBNull.Value);
                     }
-                    
+
                     if (dateCheckIn != "" && dateReturned != "") //Changing Date for Returned
                     {
                         update.Parameters.Add("@DateReturned", SqlDbType.DateTime).Value = dateReturned;
@@ -554,21 +558,171 @@ namespace Video_Rental
 
 
         //Deleting Data
-        public string DeleteData(string thisTableID, string whichID)
+        public string DeleteData(string thisTableID, string whichID, string custID, string movieID)
         {
-            string DeleteCommand = "DELETE " + currTable + " WHERE " + whichID + "ID = @ID";
+            string delResult = "Data Successfully Deleted in " + currTable;
 
-            SqlCommand delete = new SqlCommand(DeleteCommand, con);
-            delete.Parameters.AddWithValue("@ID", thisTableID);
+            if (whichID != "RM")
+            {
+                string condition = "";
+                int activeRents = 1;
+
+                if (custID != "")
+                {
+                    condition = "WHERE CustIDFK = @CustID";
+                }
+                else if (movieID != "")
+                {
+                    condition = "WHERE MovieIDFK = @MovieID";
+                }
+
+                if (condition != "")
+                {
+                    string confirmDel = "SELECT COUNT(RMID) FROM RentedMovies " + condition + ";";
+
+
+                    SqlCommand checkDel = new SqlCommand(confirmDel, con);
+
+                    if (custID != "")
+                    {
+                        checkDel.Parameters.AddWithValue("@ID", thisTableID);
+                    }
+                    else if (movieID != "")
+                    {
+                        checkDel.Parameters.Add("@MovieID", SqlDbType.NVarChar).Value = movieID;
+                    }
+
+                    con.Open();
+
+                    //Run the Queries
+                    activeRents = Convert.ToInt32(checkDel.ExecuteScalar());
+
+                    con.Close();
+
+                }
+
+                if (activeRents == 0) //Checks that both Foreign Keys Exist
+                {
+                    string DeleteCommand = "DELETE " + currTable + " WHERE " + whichID + "ID = @ID";
+
+                    SqlCommand delete = new SqlCommand(DeleteCommand, con);
+                    delete.Parameters.AddWithValue("@ID", thisTableID);
+
+                    con.Open();
+
+                    //Run the Query
+                    delete.ExecuteNonQuery();
+
+                    con.Close();
+                }
+                else
+                {
+                    delResult = "Cannot DELETE! Must FIRST Delete Movie Rental Data with " + whichID + "ID = " + thisTableID + "!";
+                }
+            }
+            else
+            {
+                string DeleteCommand = "DELETE " + currTable + " WHERE " + whichID + "ID = @ID";
+
+                SqlCommand delete = new SqlCommand(DeleteCommand, con);
+                delete.Parameters.AddWithValue("@ID", thisTableID);
+
+                con.Open();
+
+                //Run the Query
+                delete.ExecuteNonQuery();
+
+                con.Close();
+            }
+            return delResult;
+
+        } //DeleteData Ends
+
+        public DataTable GetBestBuyers()
+        {
+            DataTable bestCust = new DataTable();
+
+            //Clears the datagrid
+            bestCust.Clear();
+
+            //Creating appropriate table
+            bestCust.Columns.Add("First Name:");
+            bestCust.Columns.Add("Last Name:");
+            bestCust.Columns.Add("Currently Renting:");
+
+            //Retreiving data from DB
+            string query = @"SELECT * FROM BiggestRenter ORDER BY Expr1 DESC;";
+
+            SqlCommand command = new SqlCommand(query, con);
+
+            con.Open();
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                bestCust.Rows.Add(
+                    reader["FirstName"],
+                    reader["LastName"],
+                    reader["Expr1"]
+                    );
+            }
+
+            reader.Close();
+            con.Close();
+
+            return bestCust;
+        } //GetBestBuyers End
+
+        public DataTable GetBestMovie()
+        {
+            DataTable bestMovie = new DataTable();
+
+            //Clears the datagrid
+            bestMovie.Clear();
+
+            //Creating appropriate table
+            bestMovie.Columns.Add("Movie Title:");
+            bestMovie.Columns.Add("No. of Movie Out:");
+
+            //Retreiving data from DB
+            string query = @"SELECT * FROM MostPopularMovie ORDER BY Expr1 DESC;";
+
+            SqlCommand command = new SqlCommand(query, con);
+
+            con.Open();
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                bestMovie.Rows.Add(
+                    reader["Title"],
+                    reader["Expr1"]
+                    );
+            }
+
+            reader.Close();
+            con.Close();
+
+            return bestMovie;
+        } //GetBestMovie
+
+        public int priceRangeCheck()
+        {
+            //Counting data from DB
+            string costQuery = @"SELECT Count(Rental_Cost) FROM Movies WHERE Rental_Cost != 2.00 AND Rental_Cost != 5.00;";
+
+            SqlCommand SqlCheck2 = new SqlCommand(costQuery, con);
 
             con.Open();
 
             //Run the Query
-            delete.ExecuteNonQuery();
+            int totPriceOutBounds = Convert.ToInt32(SqlCheck2.ExecuteScalar());
 
             con.Close();
 
-            return "Data Successfully Deleted in " + currTable;
-        } //DeleteData Ends
+            return totPriceOutBounds;
+        }
     }
 }

@@ -26,9 +26,10 @@ namespace Video_Rental
             DbGridView.DataSource = Link.CallCustomers();
             Link.currTable = "Customer";
 
-            Logic.MakeActive(CustomersBtn, RentsBtn, MoviesBtn,
+            Logic.MakeActive(CustomersBtn, RentsBtn, MoviesBtn, StatsBtn,
                 CreateBtn, UpdateBtn, DelBtn, RentOutBtn, RentInBtn,
-                ViewAllRadioBtn, ViewOutRadioBtn, ViewInRadioBtn);
+                ViewAllRadioBtn, ViewOutRadioBtn, ViewInRadioBtn,
+                DbGridView, BestBuyerGridView, BestMovieGridView);
         }
 
         private void RentsBtn_Click(object sender, EventArgs e) //Getting Rented Movies Info
@@ -36,9 +37,10 @@ namespace Video_Rental
             DbGridView.DataSource = Link.CallRents("");
             Link.currTable = "RentedMovies";
 
-            Logic.MakeActive(RentsBtn, CustomersBtn, MoviesBtn,
+            Logic.MakeActive(RentsBtn, CustomersBtn, MoviesBtn, StatsBtn,
                 CreateBtn, UpdateBtn, DelBtn, RentOutBtn, RentInBtn,
-                ViewAllRadioBtn, ViewOutRadioBtn, ViewInRadioBtn);
+                ViewAllRadioBtn, ViewOutRadioBtn, ViewInRadioBtn,
+                DbGridView, BestBuyerGridView, BestMovieGridView);
         }
 
         private void MoviesBtn_Click(object sender, EventArgs e) //Getting Movies Info
@@ -46,9 +48,23 @@ namespace Video_Rental
             DbGridView.DataSource = Link.CallMovies();
             Link.currTable = "Movies";
 
-            Logic.MakeActive(MoviesBtn, RentsBtn, CustomersBtn,
+            Logic.MakeActive(MoviesBtn, RentsBtn, CustomersBtn, StatsBtn,
                 CreateBtn, UpdateBtn, DelBtn, RentOutBtn, RentInBtn,
-                ViewAllRadioBtn, ViewOutRadioBtn, ViewInRadioBtn);
+                ViewAllRadioBtn, ViewOutRadioBtn, ViewInRadioBtn,
+                DbGridView, BestBuyerGridView, BestMovieGridView);
+        }
+
+        private void Stats_Click(object sender, EventArgs e)
+        {
+            Link.currTable = "Stats";
+
+            Logic.MakeActive(StatsBtn, CustomersBtn, RentsBtn, MoviesBtn,
+                CreateBtn, UpdateBtn, DelBtn, RentOutBtn, RentInBtn,
+                ViewAllRadioBtn, ViewOutRadioBtn, ViewInRadioBtn,
+                DbGridView, BestBuyerGridView, BestMovieGridView);
+
+            BestBuyerGridView.DataSource = Link.GetBestBuyers();
+            BestMovieGridView.DataSource = Link.GetBestMovie();
         }
 
         private void DbGridView_CellContentClick(object sender, DataGridViewCellEventArgs e) //Obtaining Clicked Cells Information
@@ -187,20 +203,20 @@ namespace Video_Rental
         {
             if (Link.currTable.Remove(1, Link.currTable.Length - 1) == "C") //If Current Tab is Customer
             {
-                MessageBox.Show(Link.DeleteData(CustIDTxtBox.Text, "Cust"));
+                MessageBox.Show(Link.DeleteData(CustIDTxtBox.Text, "Cust", CustIDTxtBox.Text, MovieIDTxtBox.Text));
 
                 DbGridView.DataSource = Link.CallCustomers();
             }
             else if (Link.currTable.Remove(1, Link.currTable.Length - 1) == "R") //If Current Tab is Rented Movies
             {
-                MessageBox.Show(Link.DeleteData(RentsIDTxtBox.Text, "RM"));
+                MessageBox.Show(Link.DeleteData(RentsIDTxtBox.Text, "RM", CustIDTxtBox.Text, MovieIDTxtBox.Text));
 
                 DbGridView.DataSource = Link.CallRents("");
                 ViewAllRadioBtn.Checked = true;
             }
             else if (Link.currTable.Remove(1, Link.currTable.Length - 1) == "M") //If Current Tab is Movies
             {
-                MessageBox.Show(Link.DeleteData(MovieIDTxtBox.Text, "Movie"));
+                MessageBox.Show(Link.DeleteData(MovieIDTxtBox.Text, "Movie", CustIDTxtBox.Text, MovieIDTxtBox.Text));
 
                 DbGridView.DataSource = Link.CallMovies();
             }

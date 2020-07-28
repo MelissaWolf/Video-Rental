@@ -72,7 +72,12 @@
             this.ViewAllRadioBtn = new System.Windows.Forms.RadioButton();
             this.ViewOutRadioBtn = new System.Windows.Forms.RadioButton();
             this.ViewInRadioBtn = new System.Windows.Forms.RadioButton();
+            this.StatsBtn = new System.Windows.Forms.Button();
+            this.BestBuyerGridView = new System.Windows.Forms.DataGridView();
+            this.BestMovieGridView = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.DbGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BestBuyerGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BestMovieGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // DbGridView
@@ -462,7 +467,6 @@
             this.ViewOutRadioBtn.Name = "ViewOutRadioBtn";
             this.ViewOutRadioBtn.Size = new System.Drawing.Size(100, 21);
             this.ViewOutRadioBtn.TabIndex = 58;
-            this.ViewOutRadioBtn.TabStop = true;
             this.ViewOutRadioBtn.Text = "Movies Out";
             this.ViewOutRadioBtn.UseVisualStyleBackColor = true;
             this.ViewOutRadioBtn.Visible = false;
@@ -475,11 +479,45 @@
             this.ViewInRadioBtn.Name = "ViewInRadioBtn";
             this.ViewInRadioBtn.Size = new System.Drawing.Size(136, 21);
             this.ViewInRadioBtn.TabIndex = 60;
-            this.ViewInRadioBtn.TabStop = true;
             this.ViewInRadioBtn.Text = "Movies Returned";
             this.ViewInRadioBtn.UseVisualStyleBackColor = true;
             this.ViewInRadioBtn.Visible = false;
             this.ViewInRadioBtn.CheckedChanged += new System.EventHandler(this.ViewInRadioBtn_CheckedChanged);
+            // 
+            // StatsBtn
+            // 
+            this.StatsBtn.BackColor = System.Drawing.Color.DarkGray;
+            this.StatsBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold);
+            this.StatsBtn.ForeColor = System.Drawing.Color.Black;
+            this.StatsBtn.Location = new System.Drawing.Point(1041, 4);
+            this.StatsBtn.Name = "StatsBtn";
+            this.StatsBtn.Size = new System.Drawing.Size(155, 35);
+            this.StatsBtn.TabIndex = 63;
+            this.StatsBtn.Text = "Statistics";
+            this.StatsBtn.UseVisualStyleBackColor = false;
+            this.StatsBtn.Click += new System.EventHandler(this.Stats_Click);
+            // 
+            // BestBuyerGridView
+            // 
+            this.BestBuyerGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.BestBuyerGridView.Location = new System.Drawing.Point(12, 86);
+            this.BestBuyerGridView.Name = "BestBuyerGridView";
+            this.BestBuyerGridView.RowHeadersWidth = 51;
+            this.BestBuyerGridView.RowTemplate.Height = 24;
+            this.BestBuyerGridView.Size = new System.Drawing.Size(477, 320);
+            this.BestBuyerGridView.TabIndex = 64;
+            this.BestBuyerGridView.Visible = false;
+            // 
+            // BestMovieGridView
+            // 
+            this.BestMovieGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.BestMovieGridView.Location = new System.Drawing.Point(597, 86);
+            this.BestMovieGridView.Name = "BestMovieGridView";
+            this.BestMovieGridView.RowHeadersWidth = 51;
+            this.BestMovieGridView.RowTemplate.Height = 24;
+            this.BestMovieGridView.Size = new System.Drawing.Size(599, 320);
+            this.BestMovieGridView.TabIndex = 65;
+            this.BestMovieGridView.Visible = false;
             // 
             // MainForm
             // 
@@ -487,6 +525,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1367, 712);
+            this.Controls.Add(this.BestMovieGridView);
+            this.Controls.Add(this.BestBuyerGridView);
+            this.Controls.Add(this.StatsBtn);
             this.Controls.Add(this.ViewInRadioBtn);
             this.Controls.Add(this.ViewOutRadioBtn);
             this.Controls.Add(this.ViewAllRadioBtn);
@@ -534,6 +575,8 @@
             this.Name = "MainForm";
             this.Text = "Video Rental";
             ((System.ComponentModel.ISupportInitialize)(this.DbGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BestBuyerGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BestMovieGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -585,6 +628,9 @@
         private System.Windows.Forms.RadioButton ViewAllRadioBtn;
         private System.Windows.Forms.RadioButton ViewOutRadioBtn;
         private System.Windows.Forms.RadioButton ViewInRadioBtn;
+        private System.Windows.Forms.Button StatsBtn;
+        private System.Windows.Forms.DataGridView BestBuyerGridView;
+        private System.Windows.Forms.DataGridView BestMovieGridView;
     }
 }
 
