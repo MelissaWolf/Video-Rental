@@ -29,6 +29,22 @@ namespace Video_Rental
 
         public string currTable;
 
+        public void PriceUpdate()
+        { //Updates Movies Price is Needed
+
+            string costUpdate = "UPDATE Movies SET Rental_Cost = 2 WHERE Year < " + (DateTime.Now.Year - 5) + " OR Year IS NULL;";
+
+            using (SqlCommand update = new SqlCommand(costUpdate, con))
+            {
+                con.Open();
+
+                //Run the Query
+                update.ExecuteNonQuery();
+
+                con.Close();
+            }
+        }
+
         public DataTable CallCustomers()
         {
             DataTable customersDT = new DataTable();
@@ -112,17 +128,7 @@ namespace Video_Rental
         public DataTable CallMovies()
         {
             //Updates Price everytime Table is called
-            string costUpdate = "UPDATE Movies SET Rental_Cost = 2 WHERE Year < " + (DateTime.Now.Year - 5) + " OR Year IS NULL;";
-
-            using (SqlCommand update = new SqlCommand(costUpdate, con))
-            {
-                con.Open();
-
-                //Run the Query
-                update.ExecuteNonQuery();
-
-                con.Close();
-            }
+            PriceUpdate();
 
             DataTable MoviestDT = new DataTable();
 
@@ -233,29 +239,100 @@ namespace Video_Rental
             con.Close();
         } //GetRentInof Ends
 
+        public string MovieErrorCheck(string checkResult, string rate, string title, string year, string copies, string genre, string plot)
+        {
+
+            string stringError = "NA";
+
+            if (rate.Length > 15)
+            {
+                stringError = "The Text '" + rate + "' is not appropriate as it is too long. Please shorten it.";
+            }
+            else if (title.Length > 50)
+            {
+                stringError = "The Text '" + title + "' is not appropriate as it is too long. Please shorten it.";
+            }
+            else if (year.Length > 4)
+            {
+                stringError = "The Text '" + year + "' is not appropriate as it is too long. Please shorten it.";
+            }
+
+            foreach (char c in year) //foreach from jakobbotsch from stack overflow
+            {
+                if (c < '0' || c > '9')
+                {
+                    stringError = "The Text '" + year + "' is not appropriate for the released date. Numbers ONLY!";
+                    break;
+                }
+            }
+
+            if (copies.Length > 2)
+            {
+                stringError = "The Text '" + copies + "' is not appropriate as it is too long. Please shorten it."; //We don't own more then 99 of one movie 
+            }
+            else if (genre.Length > 30)
+            {
+                stringError = "The Text '" + genre + "' is not appropriate as it is too long. Please shorten it.";
+            }
+            else if (plot.Length > 255)
+            {
+                stringError = "The Text '" + plot + "' is not appropriate as it is too long. Please shorten it.";
+            }
+
+            return stringError;
+        }
+
 
         //Adding to DataBase
         public string AddCustomer(string custID, string fName, string lName, string phone, string address)
         {
             string addingResult = "Data Successfully Inserted into " + currTable;
+            string stringError = "NA";
 
             string NewEntry = "INSERT INTO Customer (FirstName, LastName, Phone, Address) " +
                     "VALUES(@FirstName, @LastName, @Phone, @Address);";
 
-            //This puts the Parameters into the Code so that the Data in the Text Boxes is Added to the Database
-            using (SqlCommand newdata = new SqlCommand(NewEntry, con))
+            string[] texts = { fName, lName, phone, address };
+
+            for (int i = 0; i < texts.Length; i++)
             {
-                newdata.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = fName;
-                newdata.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = lName;
-                newdata.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = phone;
-                newdata.Parameters.Add("@Address", SqlDbType.NVarChar).Value = address;
 
-                con.Open();
+                if (texts[i].Length > 30)
+                {
 
-                //Run the Query
-                newdata.ExecuteNonQuery();
+                    stringError = "The Text '" + texts[i] + "' is not appropriate as it is too long. Please shorten it.";
+                    addingResult = stringError;
+                    break;
+                }
+            }
 
-                con.Close();
+            foreach (char c in phone) //foreach from jakobbotsch from stack overflow
+            {
+                if (c < '0' || c > '9')
+                {
+                    stringError = "The Text '" + phone + "' is not appropriate for a phone number. Numbers ONLY!";
+                    addingResult = stringError;
+                    break;
+                }
+            }
+
+            if (addingResult != stringError) //All Text Boxes are appropriate
+            {
+                //This puts the Parameters into the Code so that the Data in the Text Boxes is Added to the Database
+                using (SqlCommand newdata = new SqlCommand(NewEntry, con))
+                {
+                    newdata.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = fName;
+                    newdata.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = lName;
+                    newdata.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = phone;
+                    newdata.Parameters.Add("@Address", SqlDbType.NVarChar).Value = address;
+
+                    con.Open();
+
+                    //Run the Query
+                    newdata.ExecuteNonQuery();
+
+                    con.Close();
+                }
             }
 
             return addingResult;
@@ -284,17 +361,7 @@ namespace Video_Rental
             if (CustIDFK > 0 && MovieIDFK > 0) //Checks that both Foreign Keys Exist
             {
                 //Updates Price quickly
-                string costUpdate = "UPDATE Movies SET Rental_Cost = 2 WHERE MovieID = " + movieID + " AND Year < " + (DateTime.Now.Year - 5) + ";";
-
-                using (SqlCommand update = new SqlCommand(costUpdate, con))
-                {
-                    con.Open();
-
-                    //Run the Query
-                    update.ExecuteNonQuery();
-
-                    con.Close();
-                }
+                PriceUpdate();
 
                 string getPrice = "SELECT Rental_Cost FROM Movies WHERE MovieID = " + movieID + " OR Year IS NULL;";
 
@@ -382,22 +449,31 @@ namespace Video_Rental
             string NewEntry = "INSERT INTO Movies (Title, Year, Plot, Rating, Genre, Rental_Cost, Copies )" +
                               "VALUES(@Title, @Year, @Plot, @Rating, @Genre, 5, @Copies);";
 
-            //This puts the Parameters into the Code so that the Data in the Text Boxes is Added to the Database
-            using (SqlCommand newdata = new SqlCommand(NewEntry, con))
+            string stringError = MovieErrorCheck(addingResult, rate, title, year, copies, genre, plot);
+
+            if (stringError == "NA") //All Text Boxes are appropriate
             {
-                newdata.Parameters.Add("@Title", SqlDbType.NVarChar).Value = title;
-                newdata.Parameters.Add("@Year", SqlDbType.NVarChar).Value = year;
-                newdata.Parameters.Add("@Plot", SqlDbType.NText).Value = plot;
-                newdata.Parameters.Add("@Rating", SqlDbType.NVarChar).Value = rate;
-                newdata.Parameters.Add("@Genre", SqlDbType.NVarChar).Value = genre;
-                newdata.Parameters.Add("@Copies", SqlDbType.NVarChar).Value = copies;
+                //This puts the Parameters into the Code so that the Data in the Text Boxes is Added to the Database
+                using (SqlCommand newdata = new SqlCommand(NewEntry, con))
+                {
+                    newdata.Parameters.Add("@Title", SqlDbType.NVarChar).Value = title;
+                    newdata.Parameters.Add("@Year", SqlDbType.NVarChar).Value = year;
+                    newdata.Parameters.Add("@Plot", SqlDbType.NText).Value = plot;
+                    newdata.Parameters.Add("@Rating", SqlDbType.NVarChar).Value = rate;
+                    newdata.Parameters.Add("@Genre", SqlDbType.NVarChar).Value = genre;
+                    newdata.Parameters.Add("@Copies", SqlDbType.NVarChar).Value = copies;
 
-                con.Open();
+                    con.Open();
 
-                //Run the Query
-                newdata.ExecuteNonQuery();
+                    //Run the Query
+                    newdata.ExecuteNonQuery();
 
-                con.Close();
+                    con.Close();
+                }
+            }
+            else
+            {
+                addingResult = stringError;
             }
 
             return addingResult;
@@ -409,22 +485,50 @@ namespace Video_Rental
 
         {
             string updateResult = "Data Successfully Updated in " + currTable;
+            string stringError = "NA";
             string Update = "UPDATE Customer SET FirstName = @FirstName, LastName = @LastName, Phone = @Phone, Address = @Address WHERE CustID = " + custID + ";";
 
-            //This puts the Parameters into the Code so that the Data in the Text Boxes is Added to the Database
-            using (SqlCommand update = new SqlCommand(Update, con))
+            string[] texts = { fName, lName, phone, address };
+
+            for (int i = 0; i < texts.Length; i++)
             {
-                update.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = fName;
-                update.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = lName;
-                update.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = phone;
-                update.Parameters.Add("@Address", SqlDbType.NVarChar).Value = address;
 
-                con.Open();
+                if (texts[i].Length > 30)
+                {
 
-                //Run the Query
-                update.ExecuteNonQuery();
+                    stringError = "The Text '" + texts[i] + "' is not appropriate as it is too long. Please shorten it.";
+                    updateResult = stringError;
+                    break;
+                }
+            }
 
-                con.Close();
+            foreach (char c in phone) //foreach from jakobbotsch from stack overflow
+            {
+                if (c < '0' || c > '9')
+                {
+                    stringError = "The Text '" + phone + "' is not appropriate for a phone number. Numbers ONLY!";
+                    updateResult = stringError;
+                    break;
+                }
+            }
+
+            if (updateResult != stringError) //All Text Boxes are appropriate
+            {
+                //This puts the Parameters into the Code so that the Data in the Text Boxes is Added to the Database
+                using (SqlCommand update = new SqlCommand(Update, con))
+                {
+                    update.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = fName;
+                    update.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = lName;
+                    update.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = phone;
+                    update.Parameters.Add("@Address", SqlDbType.NVarChar).Value = address;
+
+                    con.Open();
+
+                    //Run the Query
+                    update.ExecuteNonQuery();
+
+                    con.Close();
+                }
             }
 
             return updateResult;
@@ -536,23 +640,33 @@ namespace Video_Rental
             string Update = "UPDATE Movies SET Title = @Title, Year = @Year, Plot = @Plot, Rating = @Rating, Genre = @Genre," +
                     " Rental_Cost = 5, Copies = @Copies WHERE MovieID = " + movieID + ";";
 
-            //This puts the Parameters into the Code so that the Data in the Text Boxes is Added to the Database
-            using (SqlCommand update = new SqlCommand(Update, con))
+            string stringError = MovieErrorCheck(updateResult, rate, title, year, copies, genre, plot);
+
+            if (stringError == "NA") //All Text Boxes are appropriate
             {
-                update.Parameters.Add("@Title", SqlDbType.NVarChar).Value = title;
-                update.Parameters.Add("@Year", SqlDbType.NVarChar).Value = year;
-                update.Parameters.Add("@Plot", SqlDbType.NText).Value = plot;
-                update.Parameters.Add("@Rating", SqlDbType.NVarChar).Value = rate;
-                update.Parameters.Add("@Genre", SqlDbType.NVarChar).Value = genre;
-                update.Parameters.Add("@Copies", SqlDbType.NVarChar).Value = copies;
+                //This puts the Parameters into the Code so that the Data in the Text Boxes is Added to the Database
+                using (SqlCommand update = new SqlCommand(Update, con))
+                {
+                    update.Parameters.Add("@Title", SqlDbType.NVarChar).Value = title;
+                    update.Parameters.Add("@Year", SqlDbType.NVarChar).Value = year;
+                    update.Parameters.Add("@Plot", SqlDbType.NText).Value = plot;
+                    update.Parameters.Add("@Rating", SqlDbType.NVarChar).Value = rate;
+                    update.Parameters.Add("@Genre", SqlDbType.NVarChar).Value = genre;
+                    update.Parameters.Add("@Copies", SqlDbType.NVarChar).Value = copies;
 
-                con.Open();
+                    con.Open();
 
-                //Run the Query
-                update.ExecuteNonQuery();
+                    //Run the Query
+                    update.ExecuteNonQuery();
 
-                con.Close();
+                    con.Close();
+                }
             }
+            else
+            {
+                updateResult = stringError;
+            }
+
             return updateResult;
         }
 

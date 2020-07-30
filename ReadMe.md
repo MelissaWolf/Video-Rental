@@ -15,3 +15,7 @@ Note: I assume you have correctly labeled all the movies with their ID's on the 
 
 You can view the most popular movies and how many videos customers are currently renting in the Statistics Tab.
 
+All movie are worth $5 until they are 5 years old (based on the release date), past 5 years they are worth $2.
+Movies are checked for price update when loading the movies tab and purchasing a new rental.
+
+Note: If no released date is entered the price is automatically $2.
